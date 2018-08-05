@@ -7,22 +7,28 @@ var realPerson = {
 	sayings: []
 };
 
-
 rl.question("What is the name of a real person? ", function(answer) {
 
 	realPerson.name = answer;
+	var stream = fs.createWriteStream(realPerson.name + ".md");
 
-	//
-	//	TODO: Use a Writable Stream
-	//
+	stream.write(`${realPerson.name}\n==========\n\n`);
 
+	rl.setPrompt(`What would ${realPerson.name} say? `);
+	rl.prompt();
 
-		//
-		//TODO: Write to the stream
-		//
-		
+	rl.on('line', function(saying) {
+		if (saying.toLowerCase().trim() === 'exit') {
+			stream.close();
+			rl.close();
+		} else {
+			realPerson.sayings.push(saying.trim());
+			stream.write(`* ${saying.trim()} \n`);
+
+			rl.setPrompt(`What else would ${realPerson.name} say? (exit to leave) `);
+			rl.prompt();
+		}
 	});
-
 });
 
 
